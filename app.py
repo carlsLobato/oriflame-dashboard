@@ -44,9 +44,9 @@ def create_network(df):
 
 
 # Streamlit App
-st.title("MLM Network Performance Dashboard")
+st.title("Reportes de desempeño de tu red Oriflame")
 
-uploaded_file = st.file_uploader("Upload your MLM data (.xlsx)", type=["xlsx"])
+uploaded_file = st.file_uploader("Carga aquí tu reporte de campaña (Ve a mx.oriflame.com, Mi Negocio > Reportes > 'New activity Excel report' y descarga (.xlsx)", type=["xlsx"])
 
 if uploaded_file:
     df = load_data(uploaded_file)
