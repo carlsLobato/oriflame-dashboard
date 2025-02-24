@@ -29,10 +29,10 @@ def create_network(df):
         color = 'green' if bp > 1000 else 'red' if inactive > 3 else 'blue'
 
         title_info = f"""
-        <b>{row['Nombre del Socio']}</b><br>
-        BP: {bp}<br>
-        Reclutas: {recruits}<br>
-        Descuento: {discount}%<br>
+        {row['Nombre del Socio']}
+        BP: {bp}
+        Reclutas: {recruits}
+        Descuento: {discount}
         Última Compra: {last_order}
         """
 
