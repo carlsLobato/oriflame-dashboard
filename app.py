@@ -46,7 +46,9 @@ def create_network(df):
 # Streamlit App
 st.title("Reportes de desempeño de tu red Oriflame")
 
-uploaded_file = st.file_uploader("Carga aquí tu reporte de campaña (Ve a mx.oriflame.com, Mi Negocio > Reportes > 'New activity Excel report' y descarga (.xlsx)", type=["xlsx"])
+st.markdown("**Carga aquí tu reporte de campaña  (.xlsx)**")
+st.markdown("(Ve a mx.oriflame.com, Mi Negocio > Reportes > 'New activity Excel report', escoge tu campaña, haz click en **Ver Reporte** y después en **Descargar**).")
+uploaded_file = st.file_uploader("", type=["xlsx"])
 
 if uploaded_file:
     df = load_data(uploaded_file)
