@@ -88,14 +88,18 @@ if uploaded_file:
     # Performance Analytics
     st.subheader("Estadísticas de mi red")
 
-    if 'VEP' in df.columns:
+    if 'VEP Red Personal:' in df.columns:
+        st.write("### Mi Top 10 de Socios")
+        top_performers = df[['Nombre del Socio', 'VEP Red Personal:']].sort_values(by='VEP Red Personal:',
+                                                                                   ascending=False).head(10)
+        # Reset dataframe indexes to hide them from table
+        top_performers = top_performers.reset_index(drop=True)
+        # Show table
+        st.table(top_performers)
+
         st.write("### Distribución de Puntos")
         fig, ax = plt.subplots()
-        df['VEP'].hist(bins=20, color='skyblue', edgecolor='black', ax=ax)
+        df['VEP Red Personal:'].hist(bins=20, color='skyblue', edgecolor='black', ax=ax)
         ax.set_xlabel("Puntos (BP)")
         ax.set_ylabel("Cantidad de socios")
         st.pyplot(fig)
-
-        st.write("### Mi Top 10 de Socios")
-        top_performers = df[['Nombre del Socio', 'VEP']].sort_values(by='VEP', ascending=False).head(10)
-        st.table(top_performers)
