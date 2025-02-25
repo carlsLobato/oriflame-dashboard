@@ -86,7 +86,7 @@ if uploaded_file:
         st.components.v1.html(open(tmpfile.name, "r", encoding="utf-8").read(), height=600)
 
     # Performance Analytics
-    st.subheader("Performance Analysis")
+    st.subheader("Estadísticas de mi red")
 
     if 'VEP' in df.columns:
         st.write("### Distribución de Puntos")
