@@ -133,7 +133,7 @@ if uploaded_file:
     debtors = df[df['Deuda:'] > 0][['Nombre del Socio', 'Deuda:', 'Teléfono', 'Nombre del  Sponsor']]
 
     # Remove the '52' from the phone numbers
-    debtors['Teléfono'] = debtors['Teléfono'].str.replace('^52', '', regex=True)
+    debtors['Teléfono'] = debtors['Teléfono'].astype(str).str.replace('^52', '', regex=True)
 
     # Round 'Deuda:' to two decimal places and remove unnecessary zeros
     debtors['Deuda:'] = debtors['Deuda:'].apply(lambda x: round(x, 2))
