@@ -122,10 +122,11 @@ if uploaded_file:
     st.write("*Intenta reactivar a estos socios")
     inactive_no_debt = df[(df['Catálogos Inactivo'] > 2) & (df['Deuda:'] == 0)][
         ['Nombre del Socio', 'Teléfono', 'Catálogos Inactivo']].copy()
-    inactive_no_debt['Teléfono'] = inactive_no_debt['Teléfono'].str.replace('^52', '', regex=True)
+    inactive_no_debt['Teléfono'] = inactive_no_debt['Teléfono'].astype(str).str.replace('^52', '', regex=True)
+    #inactive_no_debt['Teléfono'] = inactive_no_debt['Teléfono'].str.replace('^52', '', regex=True)
     inactive_no_debt['Catálogos Inactivo'] = inactive_no_debt['Catálogos Inactivo'].astype(int)
     inactive_no_debt = inactive_no_debt.sort_values(by='Catálogos Inactivo', ascending=False).reset_index(drop=True)
-    st.table(inactive_no_debt)
+    st.dataframe(inactive_no_debt)
 
     # Tabla de socios con deuda. OJO: la columna Nombre del  Sponsor viene con doble espacio en el reporte
     st.write("### Deuda")
