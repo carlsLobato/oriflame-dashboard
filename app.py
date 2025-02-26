@@ -34,7 +34,7 @@ def create_network(df):
 
         # Set color based on performance and type
         if member_type == 'Member':
-            color = 'purple' if bp > 100 else 'orange' if inactive > 3 else 'gray'
+            color = 'purple' if bp > 100 else 'yellow' if inactive > 3 else 'gray'
         else:
             color = 'green' if bp > 100 else 'red' if inactive > 3 else 'blue'
 
@@ -64,6 +64,19 @@ st.markdown(
 uploaded_file = st.file_uploader("", type=["xlsx"])
 
 if uploaded_file:
+    st.markdown("""
+    <p style="font-size: 14px;">
+    🟢 Socio con más de 100 puntos
+    🔵 Socio con menos de 100 puntos
+    🔴 Socio inactivo
+    </p>
+    <p style="font-size: 14px;">
+    🟣 Member con más de 100 puntos
+    🟡 Member con menos de 100 puntos
+    ⚪ Member inactivo
+    </p>
+    """, unsafe_allow_html=True)
+
     df = load_data(uploaded_file)
     G = create_network(df)
 
@@ -73,9 +86,6 @@ if uploaded_file:
     with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as tmpfile:
         net.save_graph(tmpfile.name)
         st.components.v1.html(open(tmpfile.name, "r", encoding="utf-8").read(), height=600)
-
-    # Performance Analytics
-    st.subheader("Estadísticas de mi red")
 
     if 'VEP Red Personal:' in df.columns:
         st.write("### Mi Top 10 de Socios")
@@ -92,9 +102,13 @@ if uploaded_file:
         top_performers['Puntos (red) esta campaña'] = pd.to_numeric(top_performers['Puntos (red) esta campaña'],
                                                                     errors='coerce').round(
             2)
+        top_performers['Puntos (red) esta campaña'].apply(lambda x: f"{x:,.2f}")
+        top_performers['Última campaña'].apply(lambda x: f"{x:,.2f}")
+        top_performers['Penúltima campaña'].apply(lambda x: f"{x:,.2f}")
+        top_performers['Antepenúltima campaña'].apply(lambda x: f"{x:,.2f}")
         top_performers = top_performers.sort_values(by='Puntos (red) esta campaña', ascending=False).head(10)
         top_performers = top_performers.reset_index(drop=True)
-        st.table(top_performers)
+        st.dataframe(top_performers)
 
         # st.write("### Distribución de Puntos")
         # fig, ax = plt.subplots()
@@ -105,16 +119,37 @@ if uploaded_file:
 
     # Tabla de socios inactivos sin deuda
     st.write("### Socios inactivos sin deuda")
+    st.write("*Intenta reactivar a estos socios")
     inactive_no_debt = df[(df['Catálogos Inactivo'] > 2) & (df['Deuda:'] == 0)][
         ['Nombre del Socio', 'Teléfono', 'Catálogos Inactivo']].copy()
+    inactive_no_debt['Teléfono'] = inactive_no_debt['Teléfono'].str.replace('^52', '', regex=True)
     inactive_no_debt['Catálogos Inactivo'] = inactive_no_debt['Catálogos Inactivo'].astype(int)
     inactive_no_debt = inactive_no_debt.sort_values(by='Catálogos Inactivo', ascending=False).reset_index(drop=True)
-    st.table(inactive_no_debt)
+    st.dataframe(inactive_no_debt)
 
     # Tabla de socios con deuda. OJO: la columna Nombre del  Sponsor viene con doble espacio en el reporte
     st.write("### Deuda")
     debtors = df[df['Deuda:'] > 0][['Nombre del Socio', 'Deuda:', 'Teléfono', 'Nombre del  Sponsor']]
+
+    # Remove the '52' from the phone numbers
+    debtors['Teléfono'] = debtors['Teléfono'].str.replace('^52', '', regex=True)
+
+    # Round 'Deuda:' to two decimal places and remove unnecessary zeros
+    debtors['Deuda:'] = debtors['Deuda:'].apply(lambda x: round(x, 2))
+
+    # Sort the dataframe by 'Deuda:'
     debtors = debtors.sort_values(by='Deuda:', ascending=False).reset_index(drop=True)
+
+    # Calculate total debt
     total_debt = debtors['Deuda:'].sum()
-    st.write(f"Total de deuda en la red: {total_debt:.2f}")
-    st.table(debtors)
+
+    # Display total debt with formatting
+    st.write(f"Total de deuda en la red: {total_debt:,.2f}")  # Formatting with commas
+
+    # Format the 'Deuda:' and 'Teléfono' columns with commas and two decimals
+    debtors['Deuda:'] = debtors['Deuda:'].apply(lambda x: f"{x:,.2f}")
+    debtors['Teléfono'] = debtors['Teléfono'].apply(
+        lambda x: str(x))  # Ensure 'Teléfono' is a string for consistent display
+
+    # Set the column width using st.dataframe() and apply some styling
+    st.dataframe(debtors.style.set_properties(subset=['Deuda:', 'Teléfono'], **{'min-width': '200px'}))
