@@ -105,7 +105,8 @@ if uploaded_file:
     # Tabla de socios inactivos sin deuda
     st.write("### Socios inactivos sin deuda")
     inactive_no_debt = df[(df['Catálogos Inactivo'] > 2) & (df['Deuda:'] == 0)][
-        ['Nombre del Socio', 'Teléfono', 'Catálogos Inactivo']]
+        ['Nombre del Socio', 'Teléfono', 'Catálogos Inactivo']].copy()
+    inactive_no_debt['Catálogos Inactivo'] = inactive_no_debt['Catálogos Inactivo'].astype(int)
     inactive_no_debt = inactive_no_debt.sort_values(by='Catálogos Inactivo', ascending=False).reset_index(drop=True)
     st.table(inactive_no_debt)
 
