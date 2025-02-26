@@ -80,6 +80,7 @@ if uploaded_file:
 
     if 'VEP Red Personal:' in df.columns:
         st.write("### Mi Top 10 de Socios")
+        st.write("*Los puntos de campañas anteriores sólo son puntos personales")
         top_performers = df[['Nombre del Socio', 'VEP Red Personal:', 'VEP Cat -1', 'VEP Cat -2', 'VEP Cat -3']].copy()
         top_performers = top_performers.rename(
             columns={'VEP Red Personal:': 'Puntos (red) esta campaña',
