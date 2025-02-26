@@ -88,7 +88,7 @@ if uploaded_file:
         st.components.v1.html(open(tmpfile.name, "r", encoding="utf-8").read(), height=600)
 
     if 'VEP Red Personal:' in df.columns:
-        st.write("### Mi Top 10 de Socios")
+        st.write("### Puntos de mi red")
         st.write("*Los puntos de campañas anteriores sólo son puntos personales")
         top_performers = df[
             ['Nombre del Socio', 'VEP Red Personal:', 'VEP Cat -1', 'VEP Cat -2', 'VEP Cat -3']].copy()
@@ -106,8 +106,9 @@ if uploaded_file:
         top_performers['Última campaña'].apply(lambda x: f"{x:,.2f}")
         top_performers['Penúltima campaña'].apply(lambda x: f"{x:,.2f}")
         top_performers['Antepenúltima campaña'].apply(lambda x: f"{x:,.2f}")
-        top_performers = top_performers.sort_values(by='Puntos (red) esta campaña', ascending=False).head(10)
+        top_performers = top_performers.sort_values(by='Puntos (red) esta campaña', ascending=False)
         top_performers = top_performers.reset_index(drop=True)
+        top_performers.index = top_performers.index + 1
         st.dataframe(top_performers)
 
         # st.write("### Distribución de Puntos")
@@ -126,11 +127,12 @@ if uploaded_file:
     #inactive_no_debt['Teléfono'] = inactive_no_debt['Teléfono'].str.replace('^52', '', regex=True)
     inactive_no_debt['Catálogos Inactivo'] = inactive_no_debt['Catálogos Inactivo'].astype(int)
     inactive_no_debt = inactive_no_debt.sort_values(by='Catálogos Inactivo', ascending=False).reset_index(drop=True)
+    inactive_no_debt.index = inactive_no_debt.index + 1
     st.dataframe(inactive_no_debt)
 
-    # Tabla de socios con deuda. OJO: la columna Nombre del  Sponsor viene con doble espacio en el reporte
+    # Tabla de socios con deuda
     st.write("### Deuda")
-    debtors = df[df['Deuda:'] > 0][['Nombre del Socio', 'Deuda:', 'Teléfono', 'Nombre del  Sponsor']]
+    debtors = df[df['Deuda:'] > 0][['Nombre del Socio', 'Deuda:', 'Teléfono']]
 
     # Remove the '52' from the phone numbers
     debtors['Teléfono'] = debtors['Teléfono'].astype(str).str.replace('^52', '', regex=True)
@@ -140,17 +142,20 @@ if uploaded_file:
 
     # Sort the dataframe by 'Deuda:'
     debtors = debtors.sort_values(by='Deuda:', ascending=False).reset_index(drop=True)
+    debtors.index = debtors.index + 1
 
     # Calculate total debt
     total_debt = debtors['Deuda:'].sum()
 
     # Display total debt with formatting
-    st.write(f"Total de deuda en la red: {total_debt:,.2f}")  # Formatting with commas
+    st.write(f"Total de deuda en la red: ${total_debt:,.2f}")  # Formatting with commas
 
     # Format the 'Deuda:' and 'Teléfono' columns with commas and two decimals
     debtors['Deuda:'] = debtors['Deuda:'].apply(lambda x: f"{x:,.2f}")
     debtors['Teléfono'] = debtors['Teléfono'].apply(
         lambda x: str(x))  # Ensure 'Teléfono' is a string for consistent display
+
+
 
     # Set the column width using st.dataframe() and apply some styling
     st.dataframe(debtors.style.set_properties(subset=['Deuda:', 'Teléfono'], **{'min-width': '200px'}))
