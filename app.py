@@ -80,8 +80,17 @@ if uploaded_file:
 
     if 'VEP Red Personal:' in df.columns:
         st.write("### Mi Top 10 de Socios")
-        top_performers = df[['Nombre del Socio', 'VEP Red Personal:']].sort_values(by='VEP Red Personal:',
-                                                                                   ascending=False).head(10)
+        top_performers = df[['Nombre del Socio', 'VEP Red Personal:', 'VEP Cat -1', 'VEP Cat -2', 'VEP Cat -3']].copy()
+        top_performers = top_performers.rename(
+            columns={'VEP Red Personal:': 'Puntos (red) esta campaña',
+                     'VEP Cat -1': 'Última campaña',
+                     'VEP Cat -2': 'Penúltima campaña',
+                     'VEP Cat -3': 'Antepenúltima campaña'})
+        top_performers['Puntos (red) esta campaña'] = pd.to_numeric(top_performers['Puntos (red) esta campaña'],
+                                                            errors='coerce').fillna(0).round(2)
+        top_performers['Puntos (red) esta campaña'] = pd.to_numeric(top_performers['Puntos (red) esta campaña'], errors='coerce').round(
+            2)
+        top_performers = top_performers.sort_values(by='Puntos (red) esta campaña', ascending=False).head(10)
         top_performers = top_performers.reset_index(drop=True)
         st.table(top_performers)
 
