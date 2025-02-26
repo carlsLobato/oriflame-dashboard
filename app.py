@@ -6,7 +6,6 @@ import tempfile
 import matplotlib.pyplot as plt
 import re
 
-
 # Load data
 @st.cache_data
 def load_data(uploaded_file):
@@ -44,7 +43,7 @@ def create_network(df):
         {member_type} {row.get('%', 0)}%
         Puntos personales: {bp}
         Puntos en red: {row.get('VEP Red Personal:', 0)}
-        {row.get('Bonos', 'Sin bono o cashback :(')}
+        {row.get('Bonos') if pd.notna(row.get('Bonos')) else 'Sin bono o cashback :('}
         Deuda: {row.get('Deuda:', 0):.2f}
         """
 
@@ -81,26 +80,28 @@ if uploaded_file:
     if 'VEP Red Personal:' in df.columns:
         st.write("### Mi Top 10 de Socios")
         st.write("*Los puntos de campañas anteriores sólo son puntos personales")
-        top_performers = df[['Nombre del Socio', 'VEP Red Personal:', 'VEP Cat -1', 'VEP Cat -2', 'VEP Cat -3']].copy()
+        top_performers = df[
+            ['Nombre del Socio', 'VEP Red Personal:', 'VEP Cat -1', 'VEP Cat -2', 'VEP Cat -3']].copy()
         top_performers = top_performers.rename(
             columns={'VEP Red Personal:': 'Puntos (red) esta campaña',
                      'VEP Cat -1': 'Última campaña',
                      'VEP Cat -2': 'Penúltima campaña',
                      'VEP Cat -3': 'Antepenúltima campaña'})
         top_performers['Puntos (red) esta campaña'] = pd.to_numeric(top_performers['Puntos (red) esta campaña'],
-                                                            errors='coerce').fillna(0).round(2)
-        top_performers['Puntos (red) esta campaña'] = pd.to_numeric(top_performers['Puntos (red) esta campaña'], errors='coerce').round(
+                                                                    errors='coerce').fillna(0).round(2)
+        top_performers['Puntos (red) esta campaña'] = pd.to_numeric(top_performers['Puntos (red) esta campaña'],
+                                                                    errors='coerce').round(
             2)
         top_performers = top_performers.sort_values(by='Puntos (red) esta campaña', ascending=False).head(10)
         top_performers = top_performers.reset_index(drop=True)
         st.table(top_performers)
 
-        #st.write("### Distribución de Puntos")
-        #fig, ax = plt.subplots()
-        #df['VEP Red Personal:'].hist(bins=20, color='skyblue', edgecolor='black', ax=ax)
-        #ax.set_xlabel("Puntos (BP)")
-        #ax.set_ylabel("Cantidad de socios")
-        #st.pyplot(fig)
+        # st.write("### Distribución de Puntos")
+        # fig, ax = plt.subplots()
+        # df['VEP Red Personal:'].hist(bins=20, color='skyblue', edgecolor='black', ax=ax)
+        # ax.set_xlabel("Puntos (BP)")
+        # ax.set_ylabel("Cantidad de socios")
+        # st.pyplot(fig)
 
     # Tabla de socios inactivos sin deuda
     st.write("### Socios inactivos sin deuda")
