@@ -125,7 +125,7 @@ if uploaded_file:
     inactive_no_debt['Teléfono'] = inactive_no_debt['Teléfono'].str.replace('^52', '', regex=True)
     inactive_no_debt['Catálogos Inactivo'] = inactive_no_debt['Catálogos Inactivo'].astype(int)
     inactive_no_debt = inactive_no_debt.sort_values(by='Catálogos Inactivo', ascending=False).reset_index(drop=True)
-    st.dataframe(inactive_no_debt)
+    st.table(inactive_no_debt)
 
     # Tabla de socios con deuda. OJO: la columna Nombre del  Sponsor viene con doble espacio en el reporte
     st.write("### Deuda")
